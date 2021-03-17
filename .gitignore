@@ -105,3 +105,6 @@ dist
 
 # GitHub token
 token.js
+
+# Data files
+data/
