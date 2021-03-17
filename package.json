@@ -1,0 +1,24 @@
+{
+  "name": "questionsapi",
+  "version": "1.0.0",
+  "description": "Questions and answers API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Charismatic-Cedar/QuestionsAPI.git"
+  },
+  "author": "Monica Bui",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Charismatic-Cedar/QuestionsAPI/issues"
+  },
+  "homepage": "https://github.com/Charismatic-Cedar/QuestionsAPI#readme",
+  "dependencies": {
+    "mongoose": "^5.12.0",
+    "mysql": "^2.18.1",
+    "postgres": "^1.0.2"
+  }
+}
