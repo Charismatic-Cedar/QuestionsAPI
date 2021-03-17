@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/test');
+mongoose.connect('mongodb://localhost/fetcher');
 
 let questionsSchema = mongoose.Schema({
   product_id: {
@@ -97,4 +97,3 @@ answers.save('answerOne');
 module.exports = Questions;
 module.exports = Answers;
 module.exports = Photos;
-
