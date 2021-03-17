@@ -66,21 +66,11 @@ let answersSchema = mongoose.Schema({
     type: Number,
     required: true
   },
-  photos: [photosSchema],
+  photos: [String]
 });
-
-let photosSchema = mongoose.Schema({
-  id: {
-    type: Number,
-    required: true,
-    unique: true,
-  },
-  url: String,
-})
 
 let Questions = mongoose.model('Questions', questionsSchema);
 let Answers = mongoose.model('Answers', answersSchema);
-let Photos = mongoose.model('Photos', photosSchema);
 
 let getQuestion = () => {
   return Questions.find()
@@ -96,4 +86,3 @@ answers.save('answerOne');
 
 module.exports = Questions;
 module.exports = Answers;
-module.exports = Photos;
