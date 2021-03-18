@@ -21,33 +21,33 @@ CREATE TABLE products (
 )
 
 CREATE TABLE questions (
-  question_id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
   product_id INTEGER NOT NULL,
-  question_body TEXT(1000) NOT NULL,
-  question_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  body TEXT(1000) NOT NULL,
+  date_written DATETIME DEFAULT CURRENT_TIMESTAMP,
   asker_name VARCHAR(60) NOT NULL,
-  email VARCHAR(40),
-  question_helpfulness SMALLINT UNSIGNED DEFAULT 0,
+  asker_email VARCHAR(40),
   reported BOOLEAN DEFAULT 0,
+  helpful SMALLINT UNSIGNED DEFAULT 0,
   FOREIGN KEY (product_id) REFERENCES products(product_id),
 );
 
 CREATE TABLE answers (
   id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  body TEXT(1000) NOT NULL,
-  email VARCHAR(40),
-  answer_date DATETIME NOT NULL,
-  answer_name VARCHAR(60) NOT NULL,
-  helpfulness SMALLINT UNSIGNED DEFAULT 0,
-  reported BOOLEAN DEFAULT 0,
   question_id INT NOT NULL,
-  FOREIGN KEY (question_id) REFERENCES questions(question_id),
+  body TEXT(1000) NOT NULL,
+  date_written DATETIME DEFAULT CURRENT_TIMESTAMP,
+  answerer_name VARCHAR(60) NOT NULL,
+  answerer_email VARCHAR(40),
+  reported BOOLEAN DEFAULT 0,
+  helpfulness SMALLINT UNSIGNED DEFAULT 0,
+  -- FOREIGN KEY (question_id) REFERENCES questions(id),
 );
 
 CREATE TABLE photos (
   id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  photosURL VARCHAR(250),
   answer_id INT NOT NULL,
+  photoURLS VARCHAR(300),
   FOREIGN KEY (answer_id) REFERENCES answers(id),
 );
 
