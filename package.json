@@ -4,7 +4,10 @@
   "description": "Questions and answers API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js",
+    "mysql": "mysql -u root -p",
+    "loadsql": "mysql -u root -p < ./database/schema.sql"
   },
   "repository": {
     "type": "git",
@@ -17,8 +20,10 @@
   },
   "homepage": "https://github.com/Charismatic-Cedar/QuestionsAPI#readme",
   "dependencies": {
+    "express": "^4.17.1",
     "mongoose": "^5.12.0",
     "mysql": "^2.18.1",
+    "nodemon": "^2.0.7",
     "postgres": "^1.0.2"
   }
 }

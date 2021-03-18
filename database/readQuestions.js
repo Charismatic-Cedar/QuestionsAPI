@@ -28,5 +28,6 @@ const rl = readline.createInterface({
 
 rl
   .on('line', (line) => {
-    rl.output.write(`${line}\n`);
+    let question = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+    rl.output.write(`${question.join(',')}\n`);
   });

@@ -54,3 +54,10 @@ CREATE TABLE photos (
 -- INSERT INTO questions () VALUES ();
 -- INSERT INTO questions () VALUES ();
 -- INSERT INTO questions () VALUES ();
+
+
+LOAD DATA INFILE '../data/clean/questions.csv' INTO TABLE questions FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, product_id, body, date_written, asker_name, asker_email, reported, helpful);
+
+LOAD DATA INFILE '../data/clean/answers.csv' INTO TABLE answers FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED by '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, question_id, body, date_written, answerer_name, answerer_email, reported, helpful);
+
+LOAD DATA INFILE '../data/clean/answers_photos.csv' INTO TABLE photos FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED by '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, answer_id, url);
