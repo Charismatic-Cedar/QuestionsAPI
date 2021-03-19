@@ -1,0 +1,26 @@
+-- LOAD DATA LOCAL INFILE 'data/test.csv'
+-- INTO TABLE questions
+-- FIELDS TERMINATED BY ','
+-- OPTIONALLY ENCLOSED BY '"'
+-- LINES TERMINATED BY '\n'
+-- IGNORE 1 LINES (id, product_id, body, date_written, asker_name, asker_email, reported, helpful);
+
+LOAD DATA LOCAL INFILE 'data/clean/questions.csv'
+INTO TABLE questions
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
+
+LOAD DATA LOCAL INFILE 'data/clean/answers.csv'
+INTO TABLE answers
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED by '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
+
+LOAD DATA LOCAL INFILE 'data/clean/answers_photos.csv' INTO TABLE photos
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED by '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
