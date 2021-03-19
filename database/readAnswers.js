@@ -2,7 +2,7 @@ const fs = require('fs');
 const readline = require('readline');
 
 const rl = readline.createInterface({
-  input: fs.createReadStream('../data/exampleData/answers.csv'),
+  input: fs.createReadStream('../data/unfiltered/answers.csv'),
   output: fs.createWriteStream('../data/clean/answers.csv'),
   crlDelay: Infinity,
 })

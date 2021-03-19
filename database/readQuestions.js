@@ -21,8 +21,8 @@ const readline = require('readline');
 // Then how to write file for new one
 
 const rl = readline.createInterface({
-  // input = fs.createReadStream('data/unfiltered/questions.csv'),
-  input: fs.createReadStream('../data/exampleData/questions.csv'),
+  input: fs.createReadStream('../data/unfiltered/questions.csv'),
+  // input: fs.createReadStream('../data/exampleData/questions.csv'),
   output: fs.createWriteStream('../data/clean/questions.csv'),
   crlDelay: Infinity,
 })
