@@ -8,8 +8,8 @@ const port = 3200;
 
 app.use(express.json());
 
-const getQuestions = (productId) => {
-  const sqlQuery = `SELECT *, questions.question_id FROM questions LEFT JOIN answers ON (questions.question_id = answers.question_id) LEFT JOIN photos ON (answers.answer_id = photos.a_id) WHERE product_id = ${productId};`;
+const getSqlData = (item, id) => {
+  const sqlQuery = `SELECT *, questions.question_id FROM questions LEFT JOIN answers ON (questions.question_id = answers.question_id) LEFT JOIN photos ON (answers.answer_id = photos.a_id) WHERE ${item} = ${id};`;
   return new Promise ((resolve, reject) => {
     db.connection.query(sqlQuery, (error, result) => {
       if (error) {
@@ -20,7 +20,6 @@ const getQuestions = (productId) => {
     })
   })
 }
-
 
 let questionBuilder = ({ question_id, body, date_written, asker_name, helpful, reported }) => {
   return {
@@ -34,7 +33,7 @@ let questionBuilder = ({ question_id, body, date_written, asker_name, helpful, r
   }
 }
 
-let answerBuilder = ({ answer_id, answerBody, answerDate, answerer_name, reportedAnswer, helpfulness }) => {
+let questionsAnswerBuilder = ({ answer_id, answerBody, answerDate, answerer_name, helpfulness }) => {
   return {
     id: answer_id,
     body: answerBody,
@@ -45,6 +44,17 @@ let answerBuilder = ({ answer_id, answerBody, answerDate, answerer_name, reporte
   };
 }
 
+let answerBuilder = ({ answer_id, answerBody, answerDate, answerer_name, helpfulness }) => {
+  return {
+    answer_id: answer_id,
+    body: answerBody,
+    date: answerDate,
+    answerer_name: answerer_name,
+    helpfulness: helpfulness,
+    photos: [],
+  }
+}
+
 let photoBuilder = ({ photo_id, photoURLS }) => {
   return {
     id: photo_id,
@@ -52,11 +62,10 @@ let photoBuilder = ({ photo_id, photoURLS }) => {
   };
 }
 
-
 // Get request for questions
 app.get('/qa/questions', ((request, response) => {
   const { product_id } = request.query;
-  getQuestions(product_id)
+  getSqlData('product_id', product_id)
     .then((tableData) => {
       let previousQuestionID = 0;
       let previousAnswerID = 0;
@@ -65,35 +74,19 @@ app.get('/qa/questions', ((request, response) => {
         product_id: tableData[0].product_id,
         results: [],
       };
-
       for (let i = 0; i < tableData.length; i++) {
         let currentQuestion = tableData[i];
         let {
           question_id,
-          product_id,
-          body,
-          date_written,
-          asker_name,
-          asker_email,
-          reported,
-          helpful,
           answer_id,
-          answerBody,
-          answerDate,
-          answerer_name,
-          answerer_email,
-          reportedAnswer,
-          helpfulness,
           photo_id,
-          photoURLS
         } = currentQuestion;
-
         if (question_id !== previousQuestionID) {
           let questionObject = questionBuilder(currentQuestion);
           previousQuestionID = question_id;
           questionCount++;
           if (answer_id) {
-            let answerObject = answerBuilder(currentQuestion);
+            let answerObject = questionsAnswerBuilder(currentQuestion);
             questionObject.answers[`${answer_id}`] = answerObject;
             previousAnswerID = answer_id;
             if (photo_id) {
@@ -103,8 +96,7 @@ app.get('/qa/questions', ((request, response) => {
           }
           questionsResponse.results.push(questionObject);
         } else {
-          // If same as prior question id
-          let answerObject = answerBuilder(currentQuestion);
+          let answerObject = questionsAnswerBuilder(currentQuestion);
           if (answer_id !== previousAnswerID) {
             if (photo_id) {
               answerObject.photos.push(photoBuilder(currentQuestion));
@@ -119,15 +111,50 @@ app.get('/qa/questions', ((request, response) => {
       response.send(questionsResponse);
     })
     .catch((error) => {
-      console.log('Error retrieving questions from database: ', error);
+      console.log('Error retrieving questions: ', error);
       response.status(500).send(error);
     })
 }))
 
 // Get request for answers
 app.get('/qa/questions/:question_id/answers', ((request, response) => {
-  // const { question_id } = ;
-
+  const { question_id } = request.params;
+  const { page, count } = request.query;
+  getSqlData('answers.question_id', question_id)
+    .then((answerData) => {
+      let previousAnswerID = 0;
+      let answerCount = 0;
+      let answersResponse = {
+        question: answerData[0].question_id,
+        page: page || 1,
+        count: count || 100,
+        results: [],
+      };
+      for (let i = 0; i < answerData.length; i++) {
+        let currentAnswer = answerData[i];
+        let {
+          answer_id,
+          photo_id,
+          photoURLS,
+        } = currentAnswer;
+        if (answer_id !== previousAnswerID) {
+          let answerObject = answerBuilder(currentAnswer);
+          if (photo_id) {
+            answerObject.photos.push(photoBuilder(currentAnswer));
+          }
+          answersResponse.results.push(answerObject);
+          previousAnswerID = answer_id;
+          answerCount++;
+        } else {
+          answersResponse.results[answerCount - 1].photos.push(photoBuilder(currentAnswer));
+        }
+      }
+      response.send(answersResponse);
+    })
+    .catch((error) => {
+      console.log('Error retrieving answers: ', error);
+      response.status(500).send(error);
+    })
 }))
 
 // Post request for adding a question
