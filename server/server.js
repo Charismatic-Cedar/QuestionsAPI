@@ -8,8 +8,8 @@ const port = 3200;
 
 app.use(express.json());
 
-const getSqlData = (item, id) => {
-  const sqlQuery = `SELECT *, questions.question_id FROM questions LEFT JOIN answers ON (questions.question_id = answers.question_id) LEFT JOIN photos ON (answers.answer_id = photos.a_id) WHERE ${item} = ${id};`;
+const getSqlData = (item, id, reported) => {
+  const sqlQuery = `SELECT *, questions.question_id FROM questions LEFT JOIN answers ON (questions.question_id = answers.question_id) LEFT JOIN photos ON (answers.answer_id = photos.a_id) WHERE ${item} = ${id} AND ${reported} = false;`;
   return new Promise ((resolve, reject) => {
     db.connection.query(sqlQuery, (error, result) => {
       if (error) {
@@ -76,8 +76,9 @@ let postRequestValidator = ({ body, name, email }) => {
 
 // Get request for questions
 app.get('/qa/questions', ((request, response) => {
+  // let product_id = 5;
   let { product_id } = request.query;
-  getSqlData('product_id', product_id)
+  getSqlData('product_id', product_id, 'reported')
     .then((tableData) => {
       let previousQuestionID = 0;
       let previousAnswerID = 0;
@@ -120,7 +121,8 @@ app.get('/qa/questions', ((request, response) => {
           }
         }
       }
-      response.send(questionsResponse);
+      // response.send(questionsResponse);
+      response.send(tableData);
     })
     .catch((error) => {
       console.log('Error retrieving questions: ', error);
@@ -130,9 +132,10 @@ app.get('/qa/questions', ((request, response) => {
 
 // Get request for answers
 app.get('/qa/questions/:question_id/answers', ((request, response) => {
+  // let question_id = 34;
   let { question_id } = request.params;
   const { page, count } = request.query;
-  getSqlData('answers.question_id', question_id)
+  getSqlData('answers.question_id', question_id, 'reportedAnswer')
     .then((answerData) => {
       let previousAnswerID = 0;
       let answerCount = 0;
@@ -173,8 +176,8 @@ app.get('/qa/questions/:question_id/answers', ((request, response) => {
 app.post('/qa/questions', ((request, response) => {
   let { body, name, email, product_id } = request.body;
   postRequestValidator(request.body);
-  const postQuestionQuery = `INSERT INTO questions (product_id, body, asker_name, asker_email) VALUES (${product_id}, "${body}", "${name}", "${email}")`;
-  db.connection.query(postQuestionQuery, (error, result) => {
+  const postQuestionQuery = `INSERT INTO questions (product_id, body, asker_name, asker_email) VALUES (?, ?, ?, ?)`;
+  db.connection.query(postQuestionQuery, [product_id, body, name, email], (error, result) => {
     if (error) {
       console.log('Error posting question to database: ', error);
       response.status(500).send(error);
