@@ -224,7 +224,6 @@ app.post('/qa/questions/:question_id/answers', ((request, response) => {
 
 // Put request for question helpfulness
 app.put('/qa/questions/:question_id/helpful', ((request, response) => {
-  console.log(request.params);
   const { question_id } = request.params;
   const helpfulQuestionQuery = `UPDATE questions SET helpful = helpful + 1 WHERE question_id = ${question_id};`;
   db.connection.query(helpfulQuestionQuery, (error, result) => {

@@ -1,36 +1,13 @@
 const fs = require('fs');
 const readline = require('readline');
 
-// From documentation:
-// const rl = readline.createInterface({
-//   input: process.stdin,
-//   output: process.stdout
-// });
-
-// rl.question('What do you think of Node.js? ', (answer) => {
-//   // TODO: Log the answer in a database
-//   console.log(`Thank you for your valuable feedback: ${answer}`);
-
-//   rl.close();
-// });
-
-// Plan:
-// What defines clean??
-// ???? Missing info??? dupes??
-// Know what to get rid of... --> how to write code to get rid of
-// Then how to write file for new one
-
 const rl = readline.createInterface({
   input: fs.createReadStream('../data/unfiltered/questions.csv'),
-  // input: fs.createReadStream('../data/exampleData/questions.csv'),
   output: fs.createWriteStream('../data/clean/questions.csv'),
   crlDelay: Infinity,
 })
 
 rl.outputError = fs.createWriteStream('../data/filteredUnused/questions.csv');
-
-// Quote check if anything is string
-// Duplicates?
 
 let questionsCount = 0;
 
@@ -99,3 +76,24 @@ rl
   .on('close', () => {
     console.log('Number of lines - questions: ', questionsCount);
   })
+
+
+// Notes:
+
+// To validate emails:
+// const urlPattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+// '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+// '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+// '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+// '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+// '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+
+// function isValidURL(url) {
+//   let str = url;
+//   // remove surrounding double quotes
+//   if (url[0] === '"' && url[0] === url[url.length - 1]) {
+//     str = url.substring(1, url.length - 1);
+//   }
+
+//   return !!urlPattern.test(str);
+// }
