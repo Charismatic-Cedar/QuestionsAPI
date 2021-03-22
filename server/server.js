@@ -224,8 +224,10 @@ app.post('/qa/questions/:question_id/answers', ((request, response) => {
 
 // Put request for question helpfulness
 app.put('/qa/questions/:question_id/helpful', ((request, response) => {
-  const helpfulQuestionQuery = ''; // ??
-  db.query(helpfulQuestionQuery, (error, result) => {
+  console.log(request.params);
+  const { question_id } = request.params;
+  const helpfulQuestionQuery = `UPDATE questions SET helpful = helpful + 1 WHERE question_id = ${question_id};`;
+  db.connection.query(helpfulQuestionQuery, (error, result) => {
     if (error) {
       console.log('Error updating database - question helpfulness: ', error);
       response.sendStatus(500);
@@ -238,8 +240,9 @@ app.put('/qa/questions/:question_id/helpful', ((request, response) => {
 
 // Put request for question reporting
 app.put('/qa/questions/:question_id/report', ((request, response) => {
-  const reportQuestionQuery = ''; // ??
-  db.query(reportQuestionQuery, (error, result) => {
+  const { question_id } = request.params;
+  const reportQuestionQuery = `UPDATE questions SET reported = true WHERE question_id = ${question_id};`;
+  db.connection.query(reportQuestionQuery, (error, result) => {
     if (error) {
       console.log('Error updating database - question reporting: ', error);
       response.sendStatus(500);
@@ -252,8 +255,9 @@ app.put('/qa/questions/:question_id/report', ((request, response) => {
 
 // Put request for answer helpfulness
 app.put('/qa/answers/:answer_id/helpful', ((request, response) => {
-  const helpfulAnswerQuery = ''; // ??
-  db.query(helpfulAnswerQuery, (error, result) => {
+  const { answer_id } = request.params;
+  const helpfulAnswerQuery = `UPDATE answers SET helpfulness = helpfulness + 1 WHERE answer_id = ${answer_id};`;
+  db.connection.query(helpfulAnswerQuery, (error, result) => {
     if (error) {
       console.log('Error updating database - answer helpfulness: ', error);
       response.sendStatus(500);
@@ -266,8 +270,9 @@ app.put('/qa/answers/:answer_id/helpful', ((request, response) => {
 
 // Put request for answer reporting
 app.put('/qa/answers/:answer_id/report', ((request, response) => {
-  const reportAnswerQuery = ''; // ??
-  db.query(reportAnswerQuery, (error, result) => {
+  const { answer_id } = request.params;
+  const reportAnswerQuery = `UPDATE answers SET reportedAnswer = true WHERE answer_id = ${answer_id};`;
+  db.connection.query(reportAnswerQuery, (error, result) => {
     if (error) {
       console.log('Error updating database - answer reporting: ', error);
       response.sendStatus(500);
@@ -282,8 +287,3 @@ app.put('/qa/answers/:answer_id/report', ((request, response) => {
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
 });
-
-// Notes and experimentation:
-// let newDate = new Date;
-// let postDate = newDate.toJSON;
-// "date": "2018-01-04T00:00:00.000Z",

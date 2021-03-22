@@ -38,5 +38,4 @@ CREATE TABLE photos (
 );
 
 CREATE INDEX a_id ON photos (a_id);
-
-ALTER TABLE photos RENAME COLUMN answer_id TO a_id;
+-- ALTER TABLE photos RENAME COLUMN answer_id TO a_id;
