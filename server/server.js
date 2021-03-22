@@ -188,33 +188,36 @@ app.post('/qa/questions', ((request, response) => {
 // Post request for answers
 app.post('/qa/questions/:question_id/answers', ((request, response) => {
   let { body, name, email, photos } = request.body;
-  console.log(request.params);
   let { question_id } = request.params;
   postRequestValidator(request.body);
   const postAnswerQuery = `INSERT INTO answers (question_id, answerBody, answerer_name, answerer_email) VALUES (${question_id}, "${body}", "${name}", "${email}");`;
-  console.log(postAnswerQuery);
   return new Promise ((resolve, reject) => {
     db.connection.query(postAnswerQuery, (error, result) => {
       if (error) {
         reject(error);
       } else {
         resolve(result);
-        console.log('Promise result: ', result);
+        console.log('Successfully posted answer');
       }
     })
   })
     .then((res) => {
-      console.log(res);
-      let answerID = res.answer_id;
-      const photoQuery = `INSERT INTO photos (a_id, photoURLS) VALUES (${answerID}, ${photos});`;
+      let answerID = res.insertId;
       if (photos.length > 0) {
-        db.query(photoQuery, (err, res) => {
-          if (err) {
-            console.log('Error posting photos to database: ', err);
-          } else {
-            console.log('Successfully posted photos to database: ', res);
-          }
-        })
+        for (let i = 0; i < photos.length; i++) {
+          let photoQuery = `INSERT INTO photos (a_id, photoURLS) VALUES (${answerID}, "${photos[i]}");`;
+          db.connection.query(photoQuery, (err, res) => {
+            if (err) {
+              console.log('Error posting photos to database: ', err);
+              response.sendStatus(500);
+            } else {
+              console.log('Successfully posted photos');
+              response.sendStatus(201);
+            }
+          })
+        }
+      } else {
+        response.sendStatus(201);
       }
     })
 }))

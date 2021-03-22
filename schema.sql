@@ -32,7 +32,7 @@ CREATE TABLE answers (
 CREATE INDEX question_id ON answers (question_id);
 
 CREATE TABLE photos (
-  photo_id INT NOT NULL PRIMARY KEY,
+  photo_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
   a_id INT NOT NULL,
   photoURLS VARCHAR(300) NOT NULL
 );
