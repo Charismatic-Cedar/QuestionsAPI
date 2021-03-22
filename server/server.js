@@ -62,9 +62,21 @@ let photoBuilder = ({ photo_id, photoURLS }) => {
   };
 }
 
+let postRequestValidator = ({ body, name, email }) => {
+  if (body.length > 1000) {
+    response.sendStatus(404);
+  }
+  if (name.length > 60) {
+    response.sendStatus(404);
+  }
+  if (email.length < 5 || email.length > 60) {
+    response.sendStatus(404);
+  }
+}
+
 // Get request for questions
 app.get('/qa/questions', ((request, response) => {
-  const { product_id } = request.query;
+  let { product_id } = request.query;
   getSqlData('product_id', product_id)
     .then((tableData) => {
       let previousQuestionID = 0;
@@ -118,7 +130,7 @@ app.get('/qa/questions', ((request, response) => {
 
 // Get request for answers
 app.get('/qa/questions/:question_id/answers', ((request, response) => {
-  const { question_id } = request.params;
+  let { question_id } = request.params;
   const { page, count } = request.query;
   getSqlData('answers.question_id', question_id)
     .then((answerData) => {
@@ -159,14 +171,15 @@ app.get('/qa/questions/:question_id/answers', ((request, response) => {
 
 // Post request for adding a question
 app.post('/qa/questions', ((request, response) => {
-  // What do I need???? product id, question id, or both?
-  const postQuestionQuery = ''; // ??
-  db.query(postQuestionQuery, (error, result) => {
+  let { body, name, email, product_id } = request.body;
+  postRequestValidator(request.body);
+  const postQuestionQuery = `INSERT INTO questions (product_id, body, asker_name, asker_email) VALUES (${product_id}, "${body}", "${name}", "${email}")`;
+  db.connection.query(postQuestionQuery, (error, result) => {
     if (error) {
       console.log('Error posting question to database: ', error);
-      response.sendStatus(500);
+      response.status(500).send(error);
     } else {
-      console.log('Successfully posted question to database: ', result);
+      console.log('Successfully posted question to database');
       response.sendStatus(201);
     }
   })
@@ -174,16 +187,36 @@ app.post('/qa/questions', ((request, response) => {
 
 // Post request for answers
 app.post('/qa/questions/:question_id/answers', ((request, response) => {
-  const postAnswerQuery = ''; // ??
-  db.query(postAnswerQuery, (error, result) => {
-    if (error) {
-      console.log('Error posting answer to database: ', error);
-      response.sendStatus(500);
-    } else {
-      console.log('Successfully posted question to database: ', result);
-      response.sendStatus(201);
-    }
+  let { body, name, email, photos } = request.body;
+  console.log(request.params);
+  let { question_id } = request.params;
+  postRequestValidator(request.body);
+  const postAnswerQuery = `INSERT INTO answers (question_id, answerBody, answerer_name, answerer_email) VALUES (${question_id}, "${body}", "${name}", "${email}");`;
+  console.log(postAnswerQuery);
+  return new Promise ((resolve, reject) => {
+    db.connection.query(postAnswerQuery, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(result);
+        console.log('Promise result: ', result);
+      }
+    })
   })
+    .then((res) => {
+      console.log(res);
+      let answerID = res.answer_id;
+      const photoQuery = `INSERT INTO photos (a_id, photoURLS) VALUES (${answerID}, ${photos});`;
+      if (photos.length > 0) {
+        db.query(photoQuery, (err, res) => {
+          if (err) {
+            console.log('Error posting photos to database: ', err);
+          } else {
+            console.log('Successfully posted photos to database: ', res);
+          }
+        })
+      }
+    })
 }))
 
 // Put request for question helpfulness
@@ -246,3 +279,8 @@ app.put('/qa/answers/:answer_id/report', ((request, response) => {
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
 });
+
+// Notes and experimentation:
+// let newDate = new Date;
+// let postDate = newDate.toJSON;
+// "date": "2018-01-04T00:00:00.000Z",
