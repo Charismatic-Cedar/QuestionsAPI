@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  product:
+    build: QuestionsAPI/
+    depends_on:
+      - 'database'
+    ports:
+      - "3200:3200"
+  database:
+    image: mysql:8.0.23
+    restart: always
+    environment:
+        MYSQL_DATABASE: questionsanswers
+        MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+      volumes:
+        - ./QuestionsAPI/data/clean:/tmp

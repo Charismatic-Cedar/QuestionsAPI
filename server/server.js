@@ -8,8 +8,14 @@ const port = 3200;
 
 app.use(express.json());
 
-const getSqlData = (item, id, reported) => {
-  const sqlQuery = `SELECT *, questions.question_id FROM questions LEFT JOIN answers ON (questions.question_id = answers.question_id) LEFT JOIN photos ON (answers.answer_id = photos.a_id) WHERE ${item} = ${id} AND ${reported} = false;`;
+const getSqlData = (item, id, reported, answerName) => {
+  let sqlQuery = `SELECT *, questions.question_id FROM questions
+    LEFT JOIN answers ON (questions.question_id = answers.question_id)
+    LEFT JOIN photos ON (answers.answer_id = photos.a_id)
+    WHERE ${item} = ${id} AND ${reported} = false`;
+    if (item === 'answers.question_id') {
+      sqlQuery = sqlQuery + ` ORDER BY FIELD (${answerName}, "Seller") DESC, helpfulness DESC;`
+    }
   return new Promise ((resolve, reject) => {
     db.connection.query(sqlQuery, (error, result) => {
       if (error) {
@@ -76,9 +82,8 @@ let postRequestValidator = ({ body, name, email }) => {
 
 // Get request for questions
 app.get('/qa/questions', ((request, response) => {
-  // let product_id = 5;
   let { product_id } = request.query;
-  getSqlData('product_id', product_id, 'reported')
+  getSqlData('product_id', product_id, 'reported', 'asker_name')
     .then((tableData) => {
       let previousQuestionID = 0;
       let previousAnswerID = 0;
@@ -121,8 +126,7 @@ app.get('/qa/questions', ((request, response) => {
           }
         }
       }
-      // response.send(questionsResponse);
-      response.send(tableData);
+      response.send(questionsResponse);
     })
     .catch((error) => {
       console.log('Error retrieving questions: ', error);
@@ -132,10 +136,9 @@ app.get('/qa/questions', ((request, response) => {
 
 // Get request for answers
 app.get('/qa/questions/:question_id/answers', ((request, response) => {
-  // let question_id = 34;
   let { question_id } = request.params;
   const { page, count } = request.query;
-  getSqlData('answers.question_id', question_id, 'reportedAnswer')
+  getSqlData('answers.question_id', question_id, 'reportedAnswer', 'answerer_name')
     .then((answerData) => {
       let previousAnswerID = 0;
       let answerCount = 0;
@@ -193,9 +196,9 @@ app.post('/qa/questions/:question_id/answers', ((request, response) => {
   let { body, name, email, photos } = request.body;
   let { question_id } = request.params;
   postRequestValidator(request.body);
-  const postAnswerQuery = `INSERT INTO answers (question_id, answerBody, answerer_name, answerer_email) VALUES (${question_id}, "${body}", "${name}", "${email}");`;
+  const postAnswerQuery = `INSERT INTO answers (question_id, answerBody, answerer_name, answerer_email) VALUES (?, ?, ?, ?);`;
   return new Promise ((resolve, reject) => {
-    db.connection.query(postAnswerQuery, (error, result) => {
+    db.connection.query(postAnswerQuery, [question_id, body, name, email], (error, result) => {
       if (error) {
         reject(error);
       } else {
@@ -208,8 +211,8 @@ app.post('/qa/questions/:question_id/answers', ((request, response) => {
       let answerID = res.insertId;
       if (photos.length > 0) {
         for (let i = 0; i < photos.length; i++) {
-          let photoQuery = `INSERT INTO photos (a_id, photoURLS) VALUES (${answerID}, "${photos[i]}");`;
-          db.connection.query(photoQuery, (err, res) => {
+          let photoQuery = `INSERT INTO photos (a_id, photoURLS) VALUES (${answerID}, "?");`;
+          db.connection.query(photoQuery, [photos[i]], (err, res) => {
             if (err) {
               console.log('Error posting photos to database: ', err);
               response.sendStatus(500);
