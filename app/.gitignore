@@ -111,3 +111,6 @@ data/
 
 # Docker Compose
 docker-compose.yml
+
+# PEM
+SDC.pem
