@@ -10,7 +10,7 @@ services:
     image: mysql:8.0.23
     restart: always
     environment:
-        MYSQL_DATABASE: questionsanswers
+        MYSQL_DATABASE: questionsAnswers
         MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
       volumes:
         - ./QuestionsAPI/data/clean:/tmp

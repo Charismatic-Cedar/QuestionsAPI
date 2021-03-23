@@ -108,3 +108,6 @@ token.js
 
 # Data files
 data/
+
+# Docker Compose
+docker-compose.yml

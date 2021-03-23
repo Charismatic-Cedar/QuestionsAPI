@@ -5,7 +5,8 @@
   "main": "server/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server/server.js",
+    "start": "node server/server.js",
+    "nodemon": "nodemon server/server.js",
     "mysql": "mysql -u root -p",
     "loadsql": "mysql -u root -p < schema.sql"
   },
