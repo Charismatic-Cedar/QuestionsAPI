@@ -12,8 +12,11 @@ const getSqlData = (item, id, reported, answerName) => {
     LEFT JOIN answers ON (questions.question_id = answers.question_id)
     LEFT JOIN photos ON (answers.answer_id = photos.a_id)
     WHERE ${item} = ${id} AND ${reported} = false`;
+    if (item === 'product_id') {
+      sqlQuery = sqlQuery + ` ORDER BY helpfulness DESC;`;
+    }
     if (item === 'answers.question_id') {
-      sqlQuery = sqlQuery + ` ;`ORDER BY FIELD (${answerName}, "Seller") DESC, helpfulness DESC
+      sqlQuery = sqlQuery + ` ORDER BY FIELD (${answerName}, "Seller") DESC, helpfulness DESC;`;
     }
   return new Promise ((resolve, reject) => {
     db.connection.query(sqlQuery, (error, result) => {
