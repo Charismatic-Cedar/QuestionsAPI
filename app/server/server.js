@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const axios = require('axios');
 const db = require('../database/sqlConnection.js');
 
 const app = express();
@@ -14,7 +13,7 @@ const getSqlData = (item, id, reported, answerName) => {
     LEFT JOIN photos ON (answers.answer_id = photos.a_id)
     WHERE ${item} = ${id} AND ${reported} = false`;
     if (item === 'answers.question_id') {
-      sqlQuery = sqlQuery + ` ORDER BY FIELD (${answerName}, "Seller") DESC, helpfulness DESC;`
+      sqlQuery = sqlQuery + ` ;`ORDER BY FIELD (${answerName}, "Seller") DESC, helpfulness DESC
     }
   return new Promise ((resolve, reject) => {
     db.connection.query(sqlQuery, (error, result) => {
