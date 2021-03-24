@@ -2,3 +2,7 @@ data/exampleData
 data/filteredUnused
 data/unfiltered
 SDC.pem
+logs/
+.git
+*.md
+.cache
