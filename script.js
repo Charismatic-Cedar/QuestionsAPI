@@ -5,10 +5,9 @@ export let options = {
   // vus: 10,
   // duration: '30s',
   stages: [
+    { duration: '5s', target: 10 },
     { duration: '5s', target: 200 },
-    { duration: '5s', target: 200 },
-    { duration: '5s', target: 500 },
-    { duration: '5s', target: 1000 },
+    { duration: '5s', target: 500 }
   ],
 };
 

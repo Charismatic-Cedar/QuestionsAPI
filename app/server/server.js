@@ -6,6 +6,7 @@ const app = express();
 const port = 3200;
 
 app.use(express.json());
+app.use(express.static(path.join(__dirname + '/public')));
 
 const getSqlData = (item, id, reported, answerName) => {
   let sqlQuery = `SELECT *, questions.question_id FROM questions
@@ -86,14 +87,18 @@ let postRequestValidator = ({ body, name, email }) => {
 app.get('/qa/questions', ((request, response) => {
   let { product_id } = request.query;
   getSqlData('product_id', product_id, 'reported', 'asker_name')
-    .then((tableData) => {
-      let previousQuestionID = 0;
-      let previousAnswerID = 0;
-      let questionCount = 0;
-      let questionsResponse = {
-        product_id: tableData[0].product_id,
-        results: [],
-      };
+  .then((tableData) => {
+    let previousQuestionID = 0;
+    let previousAnswerID = 0;
+    let questionCount = 0;
+    let questionsResponse = {
+      product_id: product_id,
+      results: [],
+    };
+    if (tableData.length === 0) {
+      response.send(questionsResponse);
+      return;
+    }
       for (let i = 0; i < tableData.length; i++) {
         let currentQuestion = tableData[i];
         let {
@@ -141,15 +146,19 @@ app.get('/qa/questions/:question_id/answers', ((request, response) => {
   let { question_id } = request.params;
   const { page, count } = request.query;
   getSqlData('answers.question_id', question_id, 'reportedAnswer', 'answerer_name')
-    .then((answerData) => {
-      let previousAnswerID = 0;
-      let answerCount = 0;
-      let answersResponse = {
-        question: answerData[0].question_id,
-        page: page || 1,
-        count: count || 100,
-        results: [],
-      };
+  .then((answerData) => {
+    let previousAnswerID = 0;
+    let answerCount = 0;
+    let answersResponse = {
+      question: question_id,
+      page: page || 1,
+      count: count || 100,
+      results: [],
+    };
+    if (answerData.length === 0) {
+      response.send(answersResponse);
+      return;
+    }
       for (let i = 0; i < answerData.length; i++) {
         let currentAnswer = answerData[i];
         let {

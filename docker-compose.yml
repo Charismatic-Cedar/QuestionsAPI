@@ -1,17 +1,46 @@
 version: '3'
 
+# services:
+#   questions:
+#     build: app/
+#     # image: monicabui/questionsapi_questions
+#     depends_on:
+#       - 'database'
+#     ports:
+#       - '3200:3200'
+#   database:
+#     image: mysql:8.0.23
+#     restart: always
+#     environment:
+#       MYSQL_DATABASE: questionsAnswers
+#       MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+#     volumes:
+#       - db_data:/var/lib/mysql
+#       - ./app/data/clean:/tmp
+#       # - ./app/data/clean:/tmp/mysql
+# volumes:
+#   db_data:
+
 services:
-  questions:
-    build: app/
-    depends_on:
-      - 'database'
+  nginx:
+    build: ./app/nginx
     ports:
-      - '3200:3200'
-  database:
-    image: mysql:8.0.23
-    restart: always
-    environment:
-      MYSQL_DATABASE: questionsAnswers
-      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
-    volumes:
-      - ./app/data/clean:/tmp
+      - '3100:3100'
+
+# version: '3'
+
+# services:
+#   questions:
+#     image: monicabui/questionsapi_questions
+#     depends_on:
+#       - 'database'
+#     ports:
+#       - '3200:3200'
+#   database:
+#     image: mysql:8.0.23
+#     restart: always
+#     environment:
+#       MYSQL_DATABASE: questionsAnswers
+#       MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+#     volumes:
+#       - ./app/data/clean:/tmp/mysql

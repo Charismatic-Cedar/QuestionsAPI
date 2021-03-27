@@ -1,3 +1,5 @@
+SET GLOBAL local_infile = true;
+
 -- LOAD DATA LOCAL INFILE 'data/clean/questions.csv'
 LOAD DATA LOCAL INFILE '/tmp/questions.csv'
 INTO TABLE questions
