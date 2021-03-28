@@ -26,6 +26,8 @@ services:
     build: ./app/nginx
     ports:
       - '3100:3100'
+    expose:
+      - '3100'
 
 # version: '3'
 
@@ -44,3 +46,38 @@ services:
 #       MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
 #     volumes:
 #       - ./app/data/clean:/tmp/mysql
+
+# For servers on AWS:
+services:
+  questions:
+    image: monicabui/questionsapi_questions
+    ports:
+      - '3200:3200'
+    expose:
+      - '3200'
+
+services:
+  nginx:
+    image: monicabui/questionsapi_nginx
+    ports:
+      - '3200:3200'
+    expose:
+      - '3200'
+
+
+services:
+  database:
+    image: mysql:8.0.23
+    restart: always
+    environment:
+      MYSQL_DATABASE: questionsAnswers
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./app/data/clean:/data
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+volumes:
+  db_data:

@@ -2,7 +2,7 @@ const mysql = require('mysql2');
 
 const connection = mysql.createPool({
   // host: 'localhost',
-  host: 'database',
+  // host: 'database',
   user: 'root',
   password: 'hackreactor',
   database: 'questionsAnswers',
@@ -20,3 +20,7 @@ const connection = mysql.createPool({
 // });
 
 module.exports.connection = connection;
+
+// scp -i SDC.pem ./app/data/clean/answers.csv ubuntu@ec2-52-53-208-239.us-west-1.compute.amazonaws.com:data;
+
+// ssh -i "SDC.pem" ubuntu@ec2-52-53-208-239.us-west-1.compute.amazonaws.com
